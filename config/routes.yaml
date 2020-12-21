@@ -11,3 +11,28 @@ addMannschaft:
   path: /mannschaft
   methods: POST
   controller: App\Controller\TeamController::add
+
+listGame:
+  path: /games
+  methods: GET
+  controller: App\Controller\GameController::list
+
+createGame:
+  path: /games
+  methods: POST
+  controller: App\Controller\GameController::create
+
+readGame:
+  path: /games
+  methods: READ
+  controller: App\Controller\GameController::read
+
+updateGame:
+  path: /games
+  methods: PUT
+  controller: App\Controller\GameController::update
+
+deleteGame:
+  path: /games
+  methods: DELETE
+  controller: App\Controller\GameController::delete

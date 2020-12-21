@@ -6,6 +6,7 @@ namespace App\Entity;
 
 use JsonSerializable;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\TeamRepository")
@@ -22,11 +23,13 @@ class Team implements \JsonSerializable
 
     /**
      *  @ORM\Column(type="string", length=255)
+     *  @Assert\NotBlank
      */
     protected string $name;
 
     /**
      *  @ORM\Column(type="string", length=255)
+     *  @Assert\NotBlank
      */
     protected string $spielklasse; 
 

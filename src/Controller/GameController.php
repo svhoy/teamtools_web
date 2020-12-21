@@ -4,39 +4,31 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Entity\Team;
+use App\Entity\Game;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Validator\ConstraintViolation;
 
-class TeamController extends AbstractController
+class GameController extends AbstractController
 {
 	public function list(): Response
 	{	
-		$teams = $this->getDoctrine()->getRepository(Team::class)->findAll();
+		$games = $this->getDoctrine()->getRepository(Game::class)->findAll();
 
-		if(!$teams){
-			return $this->json(['success' => false], 404);
-		}
-
-		$dataArray = [
-            'success' => true,
-            'teams' => $teams
-        ];
-		return $this->json($dataArray);
+		return $this->json(['Games' => $games]);
 	}
 
-	public function add(Request $request, ValidatorInterface $validator): Response
+	public function create(Request $request, ValidatorInterface $validator): Response
 	{
-		$teamName = $request->request->get('name');
-		$liga = $request->request->get('liga');
+		$spieltag = $request->request->getInt('spieltag');
+		$gegnerName = $request->request->get('gegnerName');
 
 		
-		$newTeam = (new Team()) -> setName($teamName)->setSpielklasse($liga);
+		$newGame = (new Game()) -> setSpieltag($spieltag)->setGegnerName($gegnerName)->setSpieldatum(new \DateTime());
 		
-		$errors = $validator->validate($newTeam);
+		$errors = $validator->validate($newGame);
 
 		if(count($errors) > 0) {
 			$errorMessages = [];
@@ -48,10 +40,29 @@ class TeamController extends AbstractController
 		}
 
 		$entityManager = $this->getDoctrine()->getManager();
-		$entityManager->persist($newTeam);
+		$entityManager->persist($newGame);
 		$entityManager->flush();
 
-		return $this->json(['success' => true, 'subscribtion' => $newTeam], 201);
+		return $this->json(['success' => true, 'subscribtion' => $newGame], 201);
+
+	}
+
+	public function read(): Response
+	{
+		
+		
+	}
+
+	public function update(): Response
+	{
+		
+		
+	}
+
+	public function delete(): Response
+	{
+		
+		
 	}
 }
 
