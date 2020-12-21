@@ -1,8 +1,10 @@
 <?php 
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
-use App\Model\Team;
+use App\Entity\Team;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -19,18 +21,28 @@ class TeamController extends AbstractController
 
 	protected function generateTeam():array {
 		$returnArray = [];
+		
+		$entityManager = $this->getDoctrine()->getManager();
 
-		$returnArray[]  = (new Team)
+		$team1  = (new Team)
 			-> setName("1. Mannschaft")
 			-> setSpielklasse("Landesliga");
 
-		$returnArray[]  = (new Team)
+		$entityManager->persist($team1);
+
+		$team2  = (new Team)
 			-> setName("2. Mannschaft")
 			-> setSpielklasse("Bezirksliga");
+
+		$entityManager->persist($team2);
 		
-		$returnArray[]  = (new Team)
+		$team3  = (new Team)
 			-> setName("1. Mannschaft")
 			-> setSpielklasse("Bezirksklasse");
+
+		$entityManager->persist($team3);
+
+		$entityManager->flush();
 
 		return $returnArray;
 	}

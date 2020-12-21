@@ -2,14 +2,32 @@
 
 declare(strict_types=1);
 
-namespace App\Model;
+namespace App\Entity;
 
 use JsonSerializable;
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * @ORM\Entity()
+ */
 
 class Team implements \JsonSerializable
-{
+{   
+    /**
+     *  @ORM\Id
+     *  @ORM\GeneratedValue
+     *  @ORM\Column(type="integer")
+     */
+    protected int $id;
+
+    /**
+     *  @ORM\Column(type="string", length=255)
+     */
     protected string $name;
 
+    /**
+     *  @ORM\Column(type="string", length=255)
+     */
     protected string $spielklasse; 
 
     
