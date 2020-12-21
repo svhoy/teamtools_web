@@ -4,4 +4,10 @@ index:
 
 listMannschaften:
   path: /mannschaften
+  methods: GET
   controller: App\Controller\TeamController::list
+
+addMannschaft:
+  path: /mannschaft
+  methods: POST
+  controller: App\Controller\TeamController::add

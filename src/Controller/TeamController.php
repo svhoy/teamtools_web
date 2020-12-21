@@ -6,44 +6,44 @@ namespace App\Controller;
 
 use App\Entity\Team;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class TeamController extends AbstractController
 {
 	public function list(): Response
-	{
+	{	
+		$teams = $this->getDoctrine()->getRepository(Team::class)->findAll();
+
+		if(!$teams){
+			return $this->json(['success' => false], 404);
+		}
+
 		$dataArray = [
             'success' => true,
-            'teams' => $this ->generateTeam()
+            'teams' => $teams
         ];
 		return $this->json($dataArray);
 	}
 
-	protected function generateTeam():array {
-		$returnArray = [];
-		
-		$entityManager = $this->getDoctrine()->getManager();
+	public function add(Request $request): Response
+	{
+		$teamName = $request->request->get('name');
+		$liga = $request->request->get('liga');
 
-		$team1  = (new Team)
-			-> setName("1. Mannschaft")
-			-> setSpielklasse("Landesliga");
+		if(is_string($teamName)&&is_string($liga)) {
+			$newTeam = (new Team()) -> setName($teamName)->setSpielklasse($liga);
 
-		$entityManager->persist($team1);
+			$entityManager = $this->getDoctrine()->getManager();
+			$entityManager->persist($newTeam);
+			$entityManager->flush();
 
-		$team2  = (new Team)
-			-> setName("2. Mannschaft")
-			-> setSpielklasse("Bezirksliga");
+			if($newTeam->getId()){
+				return $this->json(['success' => true, 'subscribtion' => $newTeam], 201);
+			}
+		}
 
-		$entityManager->persist($team2);
-		
-		$team3  = (new Team)
-			-> setName("1. Mannschaft")
-			-> setSpielklasse("Bezirksklasse");
-
-		$entityManager->persist($team3);
-
-		$entityManager->flush();
-
-		return $returnArray;
+		return $this->json(['success' => false], 400);
 	}
 }
+

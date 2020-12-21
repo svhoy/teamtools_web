@@ -8,7 +8,7 @@ use JsonSerializable;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="App\Repository\TeamRepository")
  */
 
 class Team implements \JsonSerializable
@@ -39,6 +39,11 @@ class Team implements \JsonSerializable
         ];
     }
 
+    public function getId():int
+    {
+        return $this->id;
+    }
+
     public function getName(): string
     {
         return $this->name;
@@ -60,4 +65,6 @@ class Team implements \JsonSerializable
         $this->spielklasse = $spielklasse;
         return $this;
     }
+
+
 }
