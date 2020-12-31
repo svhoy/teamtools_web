@@ -38,7 +38,13 @@ class Game implements \JsonSerializable
      *  @ORM\Column(type="datetime")
      *  @Assert\NotBlank
      */
-    protected \DateTime $spieldatum; 
+    protected \DateTime $spieldatum;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Team::class, inversedBy="game")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $team; 
 
     
     public function jsonSerialize()
@@ -85,6 +91,18 @@ class Game implements \JsonSerializable
     public function setSpieldatum($spieldatum): self
     {
         $this->spieldatum = $spieldatum;
+        return $this;
+    }
+
+    public function getTeam(): ?Team
+    {
+        return $this->team;
+    }
+
+    public function setTeam(?Team $team): self
+    {
+        $this->team = $team;
+
         return $this;
     }
 
