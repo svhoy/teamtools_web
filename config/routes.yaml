@@ -12,6 +12,11 @@ addMannschaft:
   methods: POST
   controller: App\Controller\TeamController::add
 
+updateMannschaft:
+  path: /mannschaft/{id}
+  methods: PUT
+  controller: App\Controller\TeamController::update
+
 listGame:
   path: /games
   methods: GET
@@ -28,7 +33,7 @@ readGame:
   controller: App\Controller\GameController::read
 
 updateGame:
-  path: /games
+  path: /games/{id}
   methods: PUT
   controller: App\Controller\GameController::update
 

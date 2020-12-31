@@ -22,11 +22,9 @@ class GameController extends AbstractController
 
 	public function create(Request $request, ValidatorInterface $validator): Response
 	{
-		$spieltag = $request->request->getInt('spieltag');
-		$gegnerName = $request->request->get('gegnerName');
 
-		
-		$newGame = (new Game()) -> setSpieltag($spieltag)->setGegnerName($gegnerName)->setSpieldatum(new \DateTime());
+		$newGame = (new Game())->setSpieldatum(new \DateTime());
+		$this->setDataToGame($request->request->all(), $newGame);
 		
 		$errors = $validator->validate($newGame);
 
@@ -53,9 +51,32 @@ class GameController extends AbstractController
 		
 	}
 
-	public function update(): Response
+	public function update(int $id, Request $request, ValidatorInterface $validator): Response
 	{
+		$game = $this->getDoctrine()->getRepository(Game::class)->find($id);
 		
+		if (!$game) {
+			return $this->json(['success' => false], 404);
+		}
+
+		$this->setDataToGame($request->request->all(), $game);
+		
+		$errors = $validator->validate($game);
+
+		if(count($errors) > 0) {
+			$errorMessages = [];
+			/** @var  ConstraintViolation $violation */
+			foreach ($errors as $violation) {
+				$errorMessages[] = $violation->getPropertyPath() . ": " . $violation->getMessage();
+			}
+			return $this->json(['success' => false, 'errors' => $errorMessages], 400);
+		}
+
+		$entityManager = $this->getDoctrine()->getManager();
+		$entityManager->flush();
+
+		return $this->json(['success' => true, 'game' => $game], 201);
+
 		
 	}
 
@@ -64,5 +85,17 @@ class GameController extends AbstractController
 		
 		
 	}
+
+	protected function setDataToGame(array $requestData, object $game) {
+		
+		foreach ($requestData as $key => $data) {
+			$methodName = 'set'. ucfirst($key);
+			if(!empty($data) && method_exists($game, $methodName)){
+				$game->{$methodName}($data);
+			}
+			
+		}
+	}
 }
+
 

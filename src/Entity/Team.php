@@ -37,8 +37,9 @@ class Team implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
+            'id' => $this->getId(),
             'name' => $this->name,
-            'spielkalsse' => $this->spielklasse,
+            'spielklasse' => $this->spielklasse,
         ];
     }
 

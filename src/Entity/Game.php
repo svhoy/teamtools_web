@@ -62,7 +62,7 @@ class Game implements \JsonSerializable
 
     public function setSpieltag($spieltag):self
     {
-        $this->spieltag = $spieltag;
+        $this->spieltag = intval($spieltag);
         return $this;
     }
 

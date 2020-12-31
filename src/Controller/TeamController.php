@@ -31,7 +31,7 @@ class TeamController extends AbstractController
 	public function add(Request $request, ValidatorInterface $validator): Response
 	{
 		$teamName = $request->request->get('name');
-		$liga = $request->request->get('liga');
+		$liga = $request->request->get('spielklasse');
 
 		
 		$newTeam = (new Team()) -> setName($teamName)->setSpielklasse($liga);
@@ -51,7 +51,47 @@ class TeamController extends AbstractController
 		$entityManager->persist($newTeam);
 		$entityManager->flush();
 
-		return $this->json(['success' => true, 'subscribtion' => $newTeam], 201);
+		return $this->json(['success' => true, 'team' => $newTeam], 201);
+	}
+
+	public function update(int $id, Request $request, ValidatorInterface $validator): Response
+	{
+		$team = $this->getDoctrine()->getRepository(Team::class)->find($id);
+		
+		if (!$team) {
+			return $this->json(['success' => false], 404);
+		}
+
+		$this->setDataToTeam($request->request->all(), $team);
+		
+		$errors = $validator->validate($team);
+
+		if(count($errors) > 0) {
+			$errorMessages = [];
+			/** @var  ConstraintViolation $violation */
+			foreach ($errors as $violation) {
+				$errorMessages[] = $violation->getPropertyPath() . ": " . $violation->getMessage();
+			}
+			return $this->json(['success' => false, 'errors' => $errorMessages], 400);
+		}
+
+		$entityManager = $this->getDoctrine()->getManager();
+		$entityManager->flush();
+
+		return $this->json(['success' => true, 'team' => $team], 201);
+
+		
+	}
+
+	protected function setDataToTeam(array $requestData, object $team) {
+		
+		foreach ($requestData as $key => $data) {
+			$methodName = 'set'. ucfirst($key);
+			if(!empty($data) && method_exists($team, $methodName)){
+				$team->{$methodName}($data);
+			}
+			
+		}
 	}
 }
 
