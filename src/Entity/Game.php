@@ -50,9 +50,13 @@ class Game implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'spieltag' => $this->spieltag,
-            'gegnerName' => $this->gegnerName,
-            'spieldatum' => $this->spieldatum,
+            'type' => 'game',
+            'id' => $this->getID(),
+            'attributes' => [
+                'spieltag' => $this->spieltag,
+                'gegnerName' => $this->gegnerName,
+                'spieldatum' => $this->spieldatum,
+            ]
         ];
     }
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Game;
+use App\Entity\Team;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,7 +18,15 @@ class GameController extends AbstractController
 	{	
 		$games = $this->getDoctrine()->getRepository(Game::class)->findAll();
 
-		return $this->json(['Games' => $games]);
+		if(!$games){
+			return $this->json(['success' => false], 404);
+		}
+
+		$dataArray = [
+			'data' => $games,
+			'links' => '/games', 
+        ];
+		return $this->json($dataArray);
 	}
 
 	public function create(Request $request, ValidatorInterface $validator): Response
@@ -58,6 +67,18 @@ class GameController extends AbstractController
 		if (!$game) {
 			return $this->json(['success' => false], 404);
 		}
+
+		// Lade (temporär) Team
+		$teamId = (int)$request->request->get('team');
+		if($teamId){
+			$team = $this->getDoctrine()->getRepository(Team::class)->find($teamId);
+			if($team){
+				$request->request->set('team', $team);
+			} else {
+				$request->request->remove('team');
+			}
+		}
+
 
 		$this->setDataToGame($request->request->all(), $game);
 		

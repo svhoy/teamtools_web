@@ -8,12 +8,13 @@ use App\Entity\Team;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Validator\ConstraintViolation;
 
 class TeamController extends AbstractController
 {
-	public function list(): Response
+	public function list(RouterInterface $router): Response
 	{	
 		$teams = $this->getDoctrine()->getRepository(Team::class)->findAll();
 
@@ -22,13 +23,13 @@ class TeamController extends AbstractController
 		}
 
 		$dataArray = [
-            'success' => true,
-            'teams' => $teams
+			'data' => $teams,
+			'links' => $router -> generate('listMannschaften'),
         ];
 		return $this->json($dataArray);
 	}
 
-	public function add(Request $request, ValidatorInterface $validator): Response
+	public function create(Request $request, ValidatorInterface $validator): Response
 	{
 		$teamName = $request->request->get('name');
 		$liga = $request->request->get('spielklasse');
@@ -52,6 +53,17 @@ class TeamController extends AbstractController
 		$entityManager->flush();
 
 		return $this->json(['success' => true, 'team' => $newTeam], 201);
+	}
+
+	public function read(int $id, Request $request) : Response 
+	{
+		$team = $this->getDoctrine()->getRepository(Team::class)->find($id);
+
+		if(!$team) {
+			return $this->json([], 400);
+		}
+
+		return $this->json(['data'  => $team]);
 	}
 
 	public function update(int $id, Request $request, ValidatorInterface $validator): Response

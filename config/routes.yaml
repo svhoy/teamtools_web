@@ -7,10 +7,15 @@ listMannschaften:
   methods: GET
   controller: App\Controller\TeamController::list
 
-addMannschaft:
+createMannschaft:
   path: /mannschaft
   methods: POST
-  controller: App\Controller\TeamController::add
+  controller: App\Controller\TeamController::create
+
+readMannschaft:
+  path: /mannschaft/{id}
+  methods: GET
+  controller: App\Controller\TeamController::read
 
 updateMannschaft:
   path: /mannschaft/{id}

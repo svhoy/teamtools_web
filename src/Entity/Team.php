@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use JsonSerializable;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -16,6 +17,18 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class Team implements \JsonSerializable
 {   
+
+    /**
+     * @ORM\OneToMany(targetEntity=Game::class, mappedBy="team")
+     */
+    private $game;
+    protected RouterInterface $router;
+
+    public function __construct(RouterInterface $router) {
+        $this->router = $router;
+        $this->game = new ArrayCollection();
+    }
+
     /**
      *  @ORM\Id
      *  @ORM\GeneratedValue
@@ -35,23 +48,20 @@ class Team implements \JsonSerializable
      */
     protected string $spielklasse;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Game::class, mappedBy="team")
-     */
-    private $game;
 
-    public function __construct()
-    {
-        $this->game = new ArrayCollection();
-    } 
-
-    
     public function jsonSerialize()
     {
         return [
+            'type' => 'team',
             'id' => $this->getId(),
-            'name' => $this->name,
+            'attributes' => [
+                'name' => $this->name,
             'spielklasse' => $this->spielklasse,
+            ],
+            'links' => [
+                // TODO 
+                'self' =>  '/mannschaft/' . $this->id,
+             ]
         ];
     }
 
