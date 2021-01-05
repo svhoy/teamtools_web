@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Team;
+use App\Serializer\TeamNormalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Validator\ConstraintViolation;
+
+use Symfony\Component\Serializer\Serializer;
 
 class TeamController extends AbstractController
 {
@@ -22,11 +25,20 @@ class TeamController extends AbstractController
 			return $this->json(['success' => false], 404);
 		}
 
+		$serializer = new Serializer([new TeamNormalizer($router)]);
+		$teamCollection = [];
+		foreach($teams as $team){
+			$array = $serializer -> normalize($team, null, ['circular_reference_handler' => function($object) {
+				return $object->getId();
+			}]);
+			$teamCollection[] = $array;
+		}
+
 		$dataArray = [
-			'data' => $teams,
+			'data' => $teamCollection,
 			'links' => $router -> generate('listMannschaften'),
         ];
-		return $this->json($dataArray);
+		return $this->json($teamCollection);
 	}
 
 	public function create(Request $request, ValidatorInterface $validator): Response

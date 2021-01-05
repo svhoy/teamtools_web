@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use JsonSerializable;
+
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass="App\Repository\GameRepository")
  */
 
-class Game implements \JsonSerializable
+class Game
 {   
     /**
      *  @ORM\Id
@@ -44,28 +44,15 @@ class Game implements \JsonSerializable
      * @ORM\ManyToOne(targetEntity=Team::class, inversedBy="game")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $team; 
+    protected $team; 
 
     
-    public function jsonSerialize()
-    {
-        return [
-            'type' => 'game',
-            'id' => $this->getID(),
-            'attributes' => [
-                'spieltag' => $this->spieltag,
-                'gegnerName' => $this->gegnerName,
-                'spieldatum' => $this->spieldatum,
-            ]
-        ];
-    }
-
     public function getId():int
     {
         return $this->id;
     }
 
-    public function getSpieltag(): string
+    public function getSpieltag(): int
     {
         return $this->spieltag;
     }
@@ -87,7 +74,7 @@ class Game implements \JsonSerializable
         return $this;
     }
 
-    public function getSpieldatum(): string
+    public function getSpieldatum(): \DateTime
     {
         return $this->spieldatum;
     }

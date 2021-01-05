@@ -5,16 +5,18 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Game;
-use App\Entity\Team;
+use App\Serializer\GameNormalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Serializer\Serializer;
 
 class GameController extends AbstractController
 {
-	public function list(): Response
+	public function list(RouterInterface $router): Response
 	{	
 		$games = $this->getDoctrine()->getRepository(Game::class)->findAll();
 
@@ -22,11 +24,16 @@ class GameController extends AbstractController
 			return $this->json(['success' => false], 404);
 		}
 
-		$dataArray = [
-			'data' => $games,
-			'links' => '/games', 
-        ];
-		return $this->json($dataArray);
+		$serializer = new Serializer([new GameNormalizer($router)]);
+		$gameCollection = [];
+		foreach($games as $game){
+			$array = $serializer -> normalize($game, null, ['circular_reference_handler' => function($object) {
+				return $object->getId();
+			}]);
+			$gameCollection[] = $array;
+		}
+
+		return $this->json($gameCollection);
 	}
 
 	public function create(Request $request, ValidatorInterface $validator): Response

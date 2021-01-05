@@ -12,7 +12,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\TeamRepository")
  */
-
 class Team 
 {   
 
@@ -44,22 +43,6 @@ class Team
      */
     protected string $spielklasse;
 
-
-    public function jsonSerialize()
-    {
-        return [
-            'type' => 'team',
-            'id' => $this->getId(),
-            'attributes' => [
-                'name' => $this->name,
-            'spielklasse' => $this->spielklasse,
-            ],
-            'links' => [
-                // TODO 
-                'self' =>  '/mannschaft/' . $this->id,
-             ]
-        ];
-    }
 
     public function getId():int
     {
