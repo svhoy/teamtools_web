@@ -6,26 +6,22 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use JsonSerializable;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\TeamRepository")
  */
 
-class Team implements \JsonSerializable
+class Team 
 {   
 
     /**
      * @ORM\OneToMany(targetEntity=Game::class, mappedBy="team")
      */
     private $game;
-    protected RouterInterface $router;
 
-    public function __construct(RouterInterface $router) {
-        $this->router = $router;
+    public function __construct() {
         $this->game = new ArrayCollection();
     }
 
